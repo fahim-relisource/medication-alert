@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="New Medication Schedule"
+             x:Class="MedicationAlert.ScheduleForm">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="BtnScheduleSave" Text="Save" Clicked="BtnScheduleSave_Clicked"/>
+    </ContentPage.ToolbarItems>
+    
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <Entry x:Name="medicineName" Placeholder="Medicine Name" Text="{Binding Path=Schedule.MedicineName, Mode=TwoWay}" />
+            <StackLayout x:Name="timeContainer" Orientation="Vertical">
+                <!--<TimePicker/>-->
+            </StackLayout>
+            <Button x:Name="BtnNewTime" Text="Add Another Time" Clicked="BtnNewTime_Clicked"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
