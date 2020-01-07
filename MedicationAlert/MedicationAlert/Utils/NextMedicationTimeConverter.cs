@@ -17,7 +17,6 @@ namespace MedicationAlert.Utils
 			foreach (String time in times)
 			{
 				var parsedTime = DateTime.Today + TimeSpan.Parse(time);
-				Console.WriteLine(parsedTime);
 				if (parsedTime > currentTime)
 				{
 					return $"Next at {parsedTime.ToString("hh:mm tt")}";

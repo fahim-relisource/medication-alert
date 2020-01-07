@@ -1,4 +1,5 @@
 ﻿using MedicationAlert.Models;
+using MedicationAlert.Services;
 using MedicationAlert.ViewModels;
 using System;
 using System.Text;
@@ -12,13 +13,14 @@ namespace MedicationAlert
   public partial class ScheduleForm : ContentPage
   {
     ScheduleViewModel scheduleViewModel;
+   
     public ScheduleForm(Schedule schedule = null)
     {
       InitializeComponent();
 
       scheduleViewModel = new ScheduleViewModel(schedule);
       BindingContext = scheduleViewModel;
-
+      
       if(schedule != null)
       {
         var times = schedule.MedicationTime.Split(';');
@@ -48,6 +50,10 @@ namespace MedicationAlert
 
       foreach (TimePicker timePicker in timeContainer.Children)
       {
+        IAlarmService alarmService = DependencyService.Get<IAlarmService>();
+        
+        alarmService.SetAlarmAt(scheduleViewModel.Schedule.MedicineName, timePicker.Time);
+
         timeBuilder.Append(timePicker.Time);
         timeBuilder.Append(";");
       }

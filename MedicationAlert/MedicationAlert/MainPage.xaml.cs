@@ -38,6 +38,7 @@ namespace MedicationAlert
 
 		private void AddNewMedication_ClickHandler()
 		{
+			App.AppLogger.D("New Button Clicked");
 			Navigation.PushAsync(new ScheduleForm());
 		}
 
@@ -47,8 +48,6 @@ namespace MedicationAlert
 			var schedule = editButton.CommandParameter as Schedule;
 
 			Navigation.PushAsync(new ScheduleForm(schedule));
-
-			Console.WriteLine(schedule.MedicineName);
 		}
 
 		private async void BtnDeleteSchedule_Clicked(object sender, EventArgs e)
