@@ -1,10 +1,6 @@
 ﻿using MedicationAlert.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace MedicationAlert
@@ -38,7 +34,6 @@ namespace MedicationAlert
 
 		private void AddNewMedication_ClickHandler()
 		{
-			App.AppLogger.D("New Button Clicked");
 			Navigation.PushAsync(new ScheduleForm());
 		}
 

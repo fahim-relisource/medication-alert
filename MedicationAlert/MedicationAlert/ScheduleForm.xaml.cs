@@ -45,7 +45,6 @@ namespace MedicationAlert
 
     private void BtnScheduleSave_Clicked(object sender, EventArgs e)
     {
-      Console.WriteLine(scheduleViewModel.Schedule.MedicineName);
       StringBuilder timeBuilder = new StringBuilder();
 
       foreach (TimePicker timePicker in timeContainer.Children)
