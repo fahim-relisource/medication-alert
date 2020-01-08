@@ -2,7 +2,6 @@
 using Android.Content;
 using Android.OS;
 using AndroidX.Work;
-using Java.Util;
 using MedicationAlert.Models;
 using System;
 using System.Collections.Generic;
@@ -16,60 +15,57 @@ namespace MedicationAlert.Droid.Services
 
 		public override Result DoWork()
 		{
-			var title = InputData.GetString("Title");
-			var message = InputData.GetString("Message");
-			var time = InputData.GetString("Time");
-
-			MainActivity.AppLogger.D($"Title: {title}; Message: {message}; Time: {time}");
-
-			var schedules = GetSchedules().Result;
-
-			//MainActivity.AppLogger.D($"Schedules Count: {schedules.Count}");
-			int i = 1;
+			List<Schedule> schedules = GetSchedules().Result;
 
 			AlarmManager alarmManager = MainActivity.Instance.GetSystemService(Context.AlarmService) as AlarmManager;
 			List<PendingIntent> intentArray = new List<PendingIntent>();
 
+			int alarmCounter = 1;
 			schedules.ForEach(schedule =>
 			{
-				//MainActivity.AppLogger.D($"Schedule Medicine Name: {schedule.MedicineName}, Medication Time: {schedule.MedicationTime}");
-				var bundle = new Bundle();
-				bundle.PutString("Title", "Medication Reminder");
-				bundle.PutString("Message", $"Please take {schedule.MedicineName} immediately.");
-
+				Bundle notificationDataBundle = new Bundle();
+				notificationDataBundle.PutString("Title", "Medication Reminder");
+				notificationDataBundle.PutString("Message", $"Please take {schedule.MedicineName} immediately.");
 
 				Intent notificationIntent = new Intent(MainActivity.Instance, typeof(MedicationAlertReceiver));
-				notificationIntent.PutExtra("NotificationData", bundle);
+				notificationIntent.PutExtra("NotificationData", notificationDataBundle);
 
-				PendingIntent alarmIntent = PendingIntent.GetBroadcast(
-						MainActivity.Instance,
-						i,
-						notificationIntent,
-						0
-					);
+				string[] medicationTimes = schedule.MedicationTime.Split(";");
 
-				// TODO Need to calculate Alarm Time from Current Time.
-				var alarmTime = SystemClock.ElapsedRealtime();
+				foreach (string medicationTime in medicationTimes)
+				{
+					if (string.IsNullOrWhiteSpace(medicationTime))
+						continue;
 
-				var myTimeSpan = TimeSpan.Parse(schedule.MedicationTime.Replace(";", String.Empty));
-				var myTotalMinutes = myTimeSpan.Hours * 60 + myTimeSpan.Minutes;
-				var myTotalMilis = (myTotalMinutes * 60 + myTimeSpan.Seconds) * 1000;
+					int alarmRequestCode = schedule.ID * 10 + alarmCounter;
+					PendingIntent alarmIntent = PendingIntent.GetBroadcast(
+							MainActivity.Instance,
+							alarmCounter,
+							notificationIntent,
+							PendingIntentFlags.Immutable
+						);
 
-				var currentTime = DateTime.Now;
-				var currentTimeMilis = ((currentTime.Hour * 60 + currentTime.Minute) * 60 + currentTime.Second) * 1000;
+					TimeSpan myTimeSpan = TimeSpan.Parse(medicationTime);
+					DateTime scheduleTime = DateTime.Today + myTimeSpan;
 
-				var anotherAlarmTime = alarmTime + (myTotalMilis - currentTimeMilis);
+					long alarmTimeEpoch = new DateTimeOffset(scheduleTime).ToUnixTimeMilliseconds();
+					long currentTimeEpoch = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
 
-				MainActivity.AppLogger.D($"Alarm Time is {alarmTime} and Current Time - Elapsed Time {anotherAlarmTime}");
+					if (alarmTimeEpoch > currentTimeEpoch)
+					{
+						alarmManager.SetAlarmClock(
+							new AlarmManager.AlarmClockInfo(
+								alarmTimeEpoch,
+								alarmIntent
+							),
+							alarmIntent
+						);
 
-				alarmManager.SetAndAllowWhileIdle(
-					AlarmType.ElapsedRealtimeWakeup,
-					anotherAlarmTime,
-					alarmIntent
-				);
-				++i;
+						intentArray.Add(alarmIntent);
+					}
 
-				intentArray.Add(alarmIntent);
+					++alarmCounter;
+				}
 			});
 
 			return Result.InvokeSuccess();
@@ -78,6 +74,13 @@ namespace MedicationAlert.Droid.Services
 		private async Task<List<Schedule>> GetSchedules()
 		{
 			return await App.Database.GetSchedulesAsync();
+		}
+
+		private long GetTimeOfDayInMilis(DateTime dateTime)
+		{
+			long inMinutes = dateTime.Hour * 60 + dateTime.Minute;
+			long inSeconds = inMinutes * 60 + dateTime.Second;
+			return inSeconds * 1000;
 		}
 	}
 }

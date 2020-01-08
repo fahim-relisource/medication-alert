@@ -10,17 +10,8 @@ namespace MedicationAlert.Droid.Services
 	{
 		public bool SetAlarmAt(string medicineName,TimeSpan medicationTime)
 		{
-
-			MainActivity.AppLogger.D($"Medicine Name-{medicineName}; Medication Time-{medicationTime}");
-
-			var dataBuilder = new AndroidX.Work.Data.Builder()
-				.PutString("Title", "Medication Reminder")
-				.PutString("Message", $"Please take {medicineName} immediately.")
-				.PutString("Time", medicationTime.ToString())
-				.Build();
-
-			PeriodicWorkRequest alarmRequest = PeriodicWorkRequest.Builder.From<AlarmWorker>(TimeSpan.FromDays(1))
-				.SetInputData(dataBuilder)
+			PeriodicWorkRequest alarmRequest = PeriodicWorkRequest.Builder
+				.From<AlarmWorker>(TimeSpan.FromDays(1))
 				.Build();
 			WorkManager.Instance.Enqueue(alarmRequest);
 

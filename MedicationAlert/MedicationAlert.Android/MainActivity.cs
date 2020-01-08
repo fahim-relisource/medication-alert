@@ -1,5 +1,4 @@
-﻿
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Media;
@@ -43,8 +42,6 @@ namespace MedicationAlert.Droid
 			var dataBundle = intent.GetBundleExtra("NotificationData");
 			var message = dataBundle.GetString("Message") ?? "My Message";
 			var title = dataBundle.GetString("Title") ?? "My Title";
-
-			MainActivity.AppLogger.D($"Title: {title}, Message: {message}");
 
 			var resultIntent = new Intent(context, typeof(MainActivity));
 			intent.AddFlags(ActivityFlags.ClearTop);
