@@ -1,4 +1,5 @@
 ﻿using AndroidX.Work;
+using Java.Util.Concurrent;
 using MedicationAlert.Services;
 using System;
 using Xamarin.Forms;
@@ -11,7 +12,7 @@ namespace MedicationAlert.Droid.Services
 		public bool SetAlarmAt(string medicineName,TimeSpan medicationTime)
 		{
 			PeriodicWorkRequest alarmRequest = PeriodicWorkRequest.Builder
-				.From<AlarmWorker>(TimeSpan.FromDays(1))
+				.From<AlarmWorker>(1, TimeUnit.Days)
 				.Build();
 			WorkManager.Instance.Enqueue(alarmRequest);
 
