@@ -10,7 +10,7 @@ namespace MedicationAlert.iOS.Services
 		public bool SetAlarmAt(string medicineName, TimeSpan medicationTime)
 		{
 			App.AppLogger.D($"Medicine Name: {medicineName}, Medication Time {medicationTime}");
-			AppDelegate.SendNotification();
+			AppDelegate.SendNotification(medicineName, medicationTime);
 			return true;
 		}
 	}

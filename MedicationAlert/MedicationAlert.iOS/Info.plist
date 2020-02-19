@@ -38,5 +38,9 @@
 	<array>
 		<string>fetch</string>
 	</array>
+  <key>NSRemindersUsageDescription</key>
+  <string>$(CFBundleDisplayName) reminders use.</string>
+  <key>NSCalendarsUsageDescription</key>
+  <string>$(CFBundleDisplayName) user your calendar.</string>
 </dict>
 </plist>
